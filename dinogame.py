@@ -89,7 +89,6 @@ def get_grass_age():
 
 def update_grass_status():
     global score
-    print(grass_status)
     i = 0
     while i < COL:
         # For each grass_status[i], its loop is 0 -> 1 -> 2 -> 3 -> 4 -> 0
@@ -210,6 +209,7 @@ if __name__ == "__main__":
         LCD.print_str(5, 0, "JUMP!")
         LCD.print_str(1, 1, "Press To START")
 
+        game_start = False
         # wait until button pressed
         while game_start == False:
             time.sleep(0.2)
@@ -217,6 +217,7 @@ if __name__ == "__main__":
         LCD.print_str(0, 1, " " * 16)
         LCD.print_str(15, 0, "0")
         LCD.print_num(0, 1, 4)
+        jump_order = False
         while True:
             # new grass coming!
             # get_grass_age() > 8 ensure distance between grass greater than 8
