@@ -13,6 +13,7 @@ Who hasn't played the dinosaur game in Chrome when network disconnected? But how
 References:
 - [Arduino 1602 Snake](https://github.com/SadaleNet/Arduino1602Snake)
 - [Raspberry Pi LCD Runner](https://github.com/Blueve/RaspberryPiLCDRunner)
+- [Drive LCD1602 by I2C interface on Raspberry Pi](https://shumeipai.nxez.com/2020/06/17/raspberry-pi-drives-lcd1602-screen-through-i2c.html)
 
 ## How to play
 
