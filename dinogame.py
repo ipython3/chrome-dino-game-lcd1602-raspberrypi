@@ -23,8 +23,16 @@ JUMP_CYCLE = 16
 GOAL_SCORE = 11  # When score == GOAL_SCORE, you win.
 MAX_SCORE_LEN = 3  # Maximum score length is 3. In other words, maximum score is 999.
 
+# 0 : there is no grass here
+# 1 : grass frame 1 here
+# 2 : grass frame 2 here
+# 3 : grass frame 3 here
+# 4 : grass frame 4 here
 grass_status = [0] * COL
 grass_old_status = [0] * COL
+
+# 0 : initial position(stand still)
+# 1 ~ JUMP_CYCLE-1 : jumping
 jump_status = 0
 jump_old_status = 0
 
@@ -81,8 +89,34 @@ def get_grass_age():
 
 def update_grass_status():
     global score
+    print(grass_status)
     i = 0
     while i < COL:
+        # For each grass_status[i], its loop is 0 -> 1 -> 2 -> 3 -> 4 -> 0
+        # How does the grass move?
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 0]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0]
+        #
+        # ...
+        #
+        # [0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        # [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        # [0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+        # [0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3]
+        # [0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4]
+        # [0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0]
+        # [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 0]
+        # [2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0]
+        # [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 0, 0]
+        # [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0]
+        # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 0, 0, 0]
+
         if grass_status[i] == 0:
             i = i + 1
         elif grass_status[i] == 1:
@@ -104,6 +138,7 @@ def update_grass_status():
             grass_status[i] = 4
             i = i + 1
         else:
+            # grass_status[i] == 4
             grass_status[i] = 0
             if i == 0:
                 score = score + 1  # because GRASS pass successfully, score = score + 1
@@ -141,11 +176,15 @@ def display_jump_status():
 def update_jump_status():
     global jump_status
     global jump_order
+    # for jump_status, its loop is 0 -> 1 -> 2 -> ... -> JUMP_CYCLE-1 -> 0
     if jump_status == 0:
         if jump_order:
-            jump_status = 1
+            jump_status = 1  # handle jump order
     else:
         jump_status = (jump_status + 1) % JUMP_CYCLE
+
+    # jump order should be cleared after it has been handled
+    # if jump order comes when still jumping, it should be ignored
     jump_order = False
 
 
@@ -166,7 +205,7 @@ if __name__ == "__main__":
     while True:
         game_status_init()
         LCD.init_lcd()
-        # LCD.turn_light(0)
+        # LCD.turn_light(0) # turn the light off
         write_user_characters()
         LCD.print_str(5, 0, "JUMP!")
         LCD.print_str(1, 1, "Press To START")
@@ -180,6 +219,8 @@ if __name__ == "__main__":
         LCD.print_num(0, 1, 4)
         while True:
             # new grass coming!
+            # get_grass_age() > 8 ensure distance between grass greater than 8
+            # random.random() > 0.9 cause uncertainty and make the game more interesting
             if get_grass_age() > 8 and random.random() > 0.9:
                 grass_status[-1] = 1
 
